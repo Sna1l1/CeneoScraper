@@ -3,7 +3,6 @@ from bs4 import BeautifulSoup
 import json
 import os
 import re
-from translate import Translator
 
 
 # product_code = input("Please enter product code: ")
@@ -11,7 +10,6 @@ product_code = "36991221"
 
 lang_from = "pl"
 lang_to = "en"
-translator = Translator(lang_to, lang_from)
 
 selectors = {
     "id": [None, "data-entry-id"],
@@ -91,24 +89,24 @@ while url:
         single_opinions["upvote"] = int(single_opinions["upvote"])
         single_opinions["downvote"] = int(single_opinions["downvote"])
         single_opinions["content"] = " ".join(
-            re.sub(r"\s+", " ", single_opinions["content"], flags=re.UNICODE).split(" ")
+            re.sub(r"\s+", " ",
+                   single_opinions["content"], flags=re.UNICODE).split(" ")
         )
-        single_opinions["content_en"] = translator.translate(
-            " ".join(
-                re.sub(r"\s+", " ", single_opinions["content"], flags=re.UNICODE).split(
-                    " "
-                )
-            )[:500]
-        )
+        single_opinions["content_en"] =" ".join(
+            re.sub(r"\s+", " ", single_opinions["content"], flags=re.UNICODE).split(
+                " "
+            )
+        )[:500]
+
         single_opinions["pros_en"] = (
             None
             if not single_opinions["pros"]
-            else translator.translate(single_opinions["pros"][:500])
+            else single_opinions["pros"][:500]
         )
         single_opinions["cons_en"] = (
             None
             if not single_opinions["cons"]
-            else translator.translate(single_opinions["cons"][:500])
+            else single_opinions["cons"][:500]
         )
         op_all.append(single_opinions)
     try:
@@ -120,6 +118,6 @@ while url:
 
 if not os.path.exists("./opinions"):
     os.mkdir("./opinions", mode=777)
-with open("./opinions/opinions.json", "w", encoding="UTF-8") as file:
+with open("./opinions/"+product_code+".json", "w", encoding="UTF-8") as file:
     json.dump(op_all, file, indent=4, ensure_ascii=False)
 print("success")
